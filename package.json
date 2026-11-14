@@ -64,5 +64,12 @@
       "\\.(css)$": "<rootDir>/src/test-utils/style-stub.js",
       "^@react-native-async-storage/async-storage$": "@react-native-async-storage/async-storage/jest/async-storage-mock"
     }
+  },
+  "overrides": {
+    "shell-quote": "1.11.0",
+    "compression": "1.8.2",
+    "node-forge": "1.4.3",
+    "source-map-js": "1.2.2",
+    "brace-expansion@^1": "1.1.21"
   }
 }
