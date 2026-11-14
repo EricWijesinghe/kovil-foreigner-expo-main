@@ -174,3 +174,6 @@ function SignUp({ onSwitch }: { onSwitch: () => void }) {
     </View>
   );
 }
+
+// Render errors on this route show a recovery screen instead of closing the app.
+export { CrashScreen as ErrorBoundary } from '@/components/crash-screen';

@@ -5,10 +5,10 @@ import { FlatList, View } from 'react-native';
 import { errorText } from '@/api/client';
 import { api, type Listing, type ListingFilters, type RoomType, type SellingType } from '@/api/kovil';
 import { ListingCard } from '@/components/listing-card';
-import { Button, Chip, EmptyState, ErrorBox, Loading, Row, T } from '@/components/ui';
+import { Button, Chip, EmptyState, ErrorBox, Row, SkeletonCards, T } from '@/components/ui';
 import { useLoad } from '@/hooks/use-load';
 import { useI18n } from '@/i18n';
-import type { StringKey } from '@/i18n/strings/en';
+import type { StringKey } from '@/i18n/catalogs';
 import { space, useTheme } from '@/theme';
 import { MAN, shortWon } from '@/tools/money';
 
@@ -97,7 +97,7 @@ export default function Listings() {
         </>
       ) : null}
       {first.data ? <T v="small">{t('listings.count', { count: first.data.totalElements })}</T> : null}
-      {first.loading && !first.data ? <Loading /> : null}
+      {first.loading && !first.data ? <SkeletonCards /> : null}
       {first.error ? <ErrorBox message={errorText(first.error, t('common.error'))} onRetry={first.reload} /> : null}
     </View>
   );
@@ -126,3 +126,6 @@ export default function Listings() {
     />
   );
 }
+
+// Render errors on this route show a recovery screen instead of closing the app.
+export { CrashScreen as ErrorBoundary } from '@/components/crash-screen';

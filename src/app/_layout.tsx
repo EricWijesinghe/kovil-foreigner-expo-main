@@ -1,15 +1,18 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { SessionProvider } from '@/auth/session';
+import { CrashScreen } from '@/components/crash-screen';
+import { installGlobalHandler, onFatalStorm } from '@/errors';
 import { Onboarding } from '@/components/onboarding';
 import { LanguageProvider, useI18n } from '@/i18n';
 import { PrefsProvider, usePrefs } from '@/prefs';
 import { ThemeModeProvider, useTheme } from '@/theme';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
+installGlobalHandler();
 
 // A cold deep link to /listing/... still gets the tabs underneath, so Back stays inside the app.
 export const unstable_settings = { initialRouteName: '(tabs)' };
@@ -46,6 +49,13 @@ function Shell() {
 }
 
 export default function RootLayout() {
+  // Repeated fatal errors outside rendering mean the app is in a broken state: offer recovery instead of a dead UI.
+  const [storm, setStorm] = useState<Error | null>(null);
+  useEffect(() => {
+    onFatalStorm(setStorm);
+    return () => onFatalStorm(null);
+  }, []);
+  if (storm) return <CrashScreen error={storm} retry={async () => setStorm(null)} />;
   return (
     <ThemeModeProvider>
       <LanguageProvider>
@@ -58,3 +68,6 @@ export default function RootLayout() {
     </ThemeModeProvider>
   );
 }
+
+// Render errors on this route show a recovery screen instead of closing the app.
+export { CrashScreen as ErrorBoundary } from '@/components/crash-screen';

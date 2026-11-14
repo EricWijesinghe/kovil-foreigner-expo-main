@@ -9,6 +9,16 @@ const KEY = 'kovil.prefs';
 type Stored = { onboarded: boolean; persona: Persona | null; checklist: string[] };
 const DEFAULTS: Stored = { onboarded: false, persona: null, checklist: [] };
 
+/** Saved data may come from an older version or be corrupt: keep only well-typed fields. */
+export function sanitize(raw: unknown): Stored {
+  const o = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+  return {
+    onboarded: o.onboarded === true,
+    persona: PERSONAS.includes(o.persona as Persona) ? (o.persona as Persona) : null,
+    checklist: Array.isArray(o.checklist) ? o.checklist.filter((x): x is string => typeof x === 'string') : [],
+  };
+}
+
 type Prefs = Stored & {
   ready: boolean;
   update: (patch: Partial<Stored>) => void;
@@ -22,7 +32,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     AsyncStorage.getItem(KEY)
-      .then((raw) => raw && setStored({ ...DEFAULTS, ...(JSON.parse(raw) as Partial<Stored>) }))
+      .then((raw) => raw && setStored(sanitize(JSON.parse(raw))))
       .catch(() => {}) // unreadable: start fresh (onboarding shows again, nothing is lost server-side)
       .finally(() => setReady(true));
   }, []);

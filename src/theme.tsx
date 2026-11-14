@@ -42,6 +42,8 @@ const dark: typeof light = {
   hero: ['#1A3F9E', '#2C64E0'] as [string, string],
 };
 export type Palette = typeof light;
+/** For screens rendered outside ThemeModeProvider (the crash screen). */
+export const PALETTES = { light, dark } as const;
 export type ThemeMode = 'system' | 'light' | 'dark';
 
 const STORAGE_KEY = 'kovil.theme';

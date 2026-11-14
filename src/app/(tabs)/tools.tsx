@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 
 import { Card, Field, Row, Screen, Section, T } from '@/components/ui';
 import { useI18n } from '@/i18n';
-import type { StringKey } from '@/i18n/strings/en';
+import type { StringKey } from '@/i18n/catalogs';
 import { usePrefs } from '@/prefs';
 import { radius, space, useTheme } from '@/theme';
 import { agentFeeCap, convertRent, formatWon, jeonseEquivalent, MAN } from '@/tools/money';
@@ -144,3 +144,6 @@ function Checklist() {
     </Section>
   );
 }
+
+// Render errors on this route show a recovery screen instead of closing the app.
+export { CrashScreen as ErrorBoundary } from '@/components/crash-screen';

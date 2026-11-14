@@ -1,12 +1,15 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Linking } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
+
+import { logError } from '@/errors';
 
 // Leaflet + OpenStreetMap in a WebView: no Google Play services and no API key needed, so the map works on every
 // Android phone. shortcut: OSM's public tile server is for light use; switch the tile URL to a commercial provider
 // (or the Naver/Kakao map SDKs) before heavy production traffic.
 const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const BASE_URL = 'https://kovil.co.kr/';
+const MAX_REMOUNTS = 3;
 
 export type MapView = { lat: number; lng: number; zoom: number; bounds: { swLat: number; swLng: number; neLat: number; neLng: number } };
 export type Pin = { id: string; lat: number; lng: number; title: string; subtitle?: string; kind: 'station' | 'campus'; color?: string };
@@ -50,9 +53,13 @@ type Props = { lat: number; lng: number; zoom: number; dark: boolean; onView: (v
 
 export const LeafletMap = forwardRef<LeafletHandle, Props>(function LeafletMap({ lat, lng, zoom, dark, onView, onError, onReady }, ref) {
   const web = useRef<WebView>(null);
+  // Bumped when Android kills the WebView renderer (low memory); remounting gives a fresh renderer that reopens
+  // where the user was. After MAX_REMOUNTS the map gives up and shows the screen's error state instead of looping.
+  const [generation, setGeneration] = useState(0);
+  const [start, setStart] = useState({ lat, lng, zoom });
+  const lastView = useRef<{ lat: number; lng: number; zoom: number } | null>(null);
   // The page is built once; later moves go through flyTo so the map never reloads.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const source = useMemo(() => ({ html: html(lat, lng, zoom, dark), baseUrl: BASE_URL }), [dark]);
+  const source = useMemo(() => ({ html: html(start.lat, start.lng, start.zoom, dark), baseUrl: BASE_URL }), [dark, start]);
   const run = (js: string) => web.current?.injectJavaScript(`window.kovil&&(${js});true;`);
 
   useImperativeHandle(ref, () => ({
@@ -64,7 +71,11 @@ export const LeafletMap = forwardRef<LeafletHandle, Props>(function LeafletMap({
   const onMessage = (e: WebViewMessageEvent) => {
     try {
       const msg = JSON.parse(e.nativeEvent.data) as { type: string } & Partial<MapView>;
-      if (msg.type === 'view') onView(msg as MapView);
+      if (msg.type === 'view') {
+        const v = msg as MapView;
+        lastView.current = { lat: v.lat, lng: v.lng, zoom: v.zoom };
+        onView(v);
+      }
       else if (msg.type === 'ready') onReady();
       else if (msg.type === 'error') onError();
     } catch {
@@ -74,6 +85,7 @@ export const LeafletMap = forwardRef<LeafletHandle, Props>(function LeafletMap({
 
   return (
     <WebView
+      key={generation}
       ref={web}
       source={source}
       originWhitelist={['https://*']}
@@ -85,6 +97,17 @@ export const LeafletMap = forwardRef<LeafletHandle, Props>(function LeafletMap({
       }}
       onMessage={onMessage}
       onError={onError}
+      // Without these handlers a killed renderer takes the whole app down with it.
+      onRenderProcessGone={() => {
+        logError('map', 'WebView renderer gone');
+        if (generation >= MAX_REMOUNTS) {
+          onError();
+          return;
+        }
+        if (lastView.current) setStart(lastView.current);
+        setGeneration(generation + 1);
+      }}
+      onContentProcessDidTerminate={() => web.current?.reload()}
       javaScriptEnabled
       domStorageEnabled
       setSupportMultipleWindows={false}

@@ -157,3 +157,6 @@ export default function MapScreen() {
     </View>
   );
 }
+
+// Render errors on this route show a recovery screen instead of closing the app.
+export { CrashScreen as ErrorBoundary } from '@/components/crash-screen';
