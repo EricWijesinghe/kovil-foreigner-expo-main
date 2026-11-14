@@ -2,8 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getLocales } from 'expo-localization';
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { en, type StringKey, type Strings } from './strings/en';
-import { catalogs } from './strings';
+import { catalogs, en, type StringKey } from './catalogs';
 
 // Same 20 codes the server activates (V39). Native names are the fallback when /languages is unreachable.
 export const LANGUAGES = [
@@ -29,7 +28,7 @@ export function deviceLanguage(): Lang {
 
 /** `{name}` placeholders; a missing key falls back to English so a gap never shows a raw key. */
 export function translate(lang: Lang, key: StringKey, params?: Record<string, string | number>): string {
-  const template = (catalogs[lang] as Strings | undefined)?.[key] ?? en[key];
+  const template = catalogs[lang]?.[key] ?? en[key];
   return params ? template.replace(/\{(\w+)\}/g, (m, p) => (p in params ? String(params[p]) : m)) : template;
 }
 

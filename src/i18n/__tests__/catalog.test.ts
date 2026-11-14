@@ -1,6 +1,5 @@
 import { LANGUAGES, translate } from '@/i18n';
-import { en } from '@/i18n/strings/en';
-import { catalogs } from '@/i18n/strings';
+import { catalogs, en } from '@/i18n/catalogs';
 
 const placeholders = (s: string) => [...s.matchAll(/\{(\w+)\}/g)].map((m) => m[1]).sort();
 
@@ -20,8 +19,8 @@ describe('UI catalogs', () => {
   it.each(Object.entries(catalogs))('%s has the same keys and placeholders as en', (lang, cat) => {
     expect(Object.keys(cat!).sort()).toEqual(Object.keys(en).sort());
     for (const [k, v] of Object.entries(en)) {
-      expect([lang, k, placeholders(cat![k as keyof typeof en])]).toEqual([lang, k, placeholders(v)]);
-      expect(cat![k as keyof typeof en].trim()).not.toBe('');
+      expect([lang, k, placeholders(cat![k as keyof typeof en] ?? '')]).toEqual([lang, k, placeholders(v)]);
+      expect((cat![k as keyof typeof en] ?? '').trim()).not.toBe('');
     }
   });
 
