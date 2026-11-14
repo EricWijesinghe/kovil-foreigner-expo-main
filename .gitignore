@@ -1,0 +1,94 @@
+# Expo 템플릿(SDK 57) 기본값 + yolo-expo 운영 선례 병합.
+# 원칙 1: 생성물·자격증명·에디터 설정은 올리지 않는다.
+# 원칙 2: 프로젝트 문서(SPEC·브리프·계약 원본)는 저장소 밖에 산다 — 아래 "문서 가드" 참조.
+# 원칙 3: **일반 명사 디렉터리는 반드시 `/`로 루트에 고정한다.** 앵커 없는 `logs`·`out/` 같은 규칙은
+#         모든 깊이에 적용돼 `src/features/logs/` 같은 정상 소스를 조용히 삼킨다.
+
+# ---------- 의존성 ----------
+node_modules/
+.npm
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+.pnp.*
+
+# ---------- Expo / React Native ----------
+.expo/
+.expo-shared/
+/dist/
+/web-build/
+expo-env.d.ts
+.metro-health-check*
+
+# 네이티브 프로젝트는 prebuild 산출물이다 — 손으로 고치기 시작하면 그때 추적으로 바꾼다.
+/ios
+/android
+.kotlin/
+
+# ---------- 자격증명 (하나라도 올라가면 회수 불가) ----------
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.pem
+*.mobileprovision
+credentials.json
+.env
+.env.*
+!.env.example
+
+# ---------- 빌드·테스트 산출물 ----------
+/coverage/
+/example
+/out/
+*.tsbuildinfo
+.eslintcache
+.cache/
+.turbo/
+
+# ---------- 로그 ----------
+# `logs`(앵커 없음)는 src 하위 동명 디렉터리까지 삼켜서 쓰지 않는다. 확장자로 충분하다.
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ---------- 에디터 · 로컬 도구 ----------
+# .vscode는 팀 공유분(권장 확장·저장 시 정리)만 올린다.
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
+.idea_modules/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ---------- macOS ----------
+# 주의: Finder 커스텀 아이콘용 `Icon?` 규칙은 넣지 않는다 —
+# `?`가 와일드카드라 `src/components/Icons/` 를 통째로 삼킨다. 아래 규칙으로 충분하다.
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+.fseventsd
+.DocumentRevisions-V100
+.TemporaryItems
+
+# ---------- 문서 가드 ----------
+# 기획·규약·계약 원본은 저장소 밖에 두고 여기에는 코드만 남긴다.
+# 루트 문서를 실수로 복사해 와도 커밋되지 않게, README만 남기고 루트의 .md를 전부 제외한다.
+# 목록 방식이면 문서가 늘 때마다 갱신해야 하고 빠뜨리면 그대로 새어 나간다.
+# `/` 앵커가 핵심이다 — 없으면 `src/types/SPEC-types.ts` 같은 정상 소스까지 사라진다.
+/*.md
+!/README.md
+open_api.json
+

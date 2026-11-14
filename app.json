@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "KOVIL",
+    "slug": "wonjoomin-foreigner-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/kovil-icon.png",
+    "scheme": "kovil",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "kr.co.kovil.app",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "kr.co.kovil.app",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "backgroundColor": "#1F5EFF",
+        "foregroundImage": "./assets/images/kovil-adaptive-fg.png",
+        "backgroundImage": "./assets/images/kovil-adaptive-bg.png",
+        "monochromeImage": "./assets/images/kovil-adaptive-mono.png"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_BACKGROUND_LOCATION"
+      ],
+      "predictiveBackGestureEnabled": false,
+      "allowBackup": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/kovil-favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#1F5EFF",
+          "image": "./assets/images/kovil-splash.png",
+          "imageWidth": 140,
+          "dark": {
+            "backgroundColor": "#0B1220",
+            "image": "./assets/images/kovil-splash.png"
+          }
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "KOVIL uses your location once to show the neighbourhood around you. It is never stored.",
+          "isAndroidBackgroundLocationEnabled": false,
+          "isIosBackgroundLocationEnabled": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
