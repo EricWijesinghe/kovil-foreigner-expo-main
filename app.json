@@ -2,7 +2,7 @@
   "expo": {
     "name": "KOVIL",
     "slug": "wonjoomin-foreigner-expo",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/kovil-icon.png",
     "scheme": "kovil",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "kr.co.kovil.app",
-      "versionCode": 1,
+      "versionCode": 2,
       "adaptiveIcon": {
         "backgroundColor": "#1F5EFF",
         "foregroundImage": "./assets/images/kovil-adaptive-fg.png",

@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 import { Button, Card, Row, Screen, T } from '@/components/ui';
 import { LANGUAGES, type Lang, useI18n } from '@/i18n';
-import type { StringKey } from '@/i18n/strings/en';
+import type { StringKey } from '@/i18n/catalogs';
 import { PERSONAS, type Persona, usePrefs } from '@/prefs';
 import { radius, space, useTheme } from '@/theme';
 

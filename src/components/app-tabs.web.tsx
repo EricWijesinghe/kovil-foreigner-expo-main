@@ -3,7 +3,7 @@ import { Pressable, View } from 'react-native';
 
 import { T } from '@/components/ui';
 import { useI18n } from '@/i18n';
-import type { StringKey } from '@/i18n/strings/en';
+import type { StringKey } from '@/i18n/catalogs';
 import { radius, space, useTheme } from '@/theme';
 
 const TABS: { name: string; href: '/' | '/map' | '/areas' | '/tools' | '/me'; label: StringKey; icon: string }[] = [
