@@ -10,15 +10,15 @@ import { PERSONA_ICON } from '@/components/onboarding';
 import { Button, Card, ErrorBox, Loading, Pill, Row, Screen, Section, T } from '@/components/ui';
 import { useLoad } from '@/hooks/use-load';
 import { useI18n } from '@/i18n';
-import type { StringKey } from '@/i18n/strings/en';
+import type { StringKey } from '@/i18n/catalogs';
 import { usePrefs } from '@/prefs';
 import { radius, space, useTheme } from '@/theme';
+import { inKorea } from '@/tools/geo';
+
+const inKoreaAt = (p: Point) => inKorea(p.lat, p.lng);
 
 const SEOUL_CITY_HALL = { lat: 37.5663, lng: 126.9779 };
 const GPS_TIMEOUT_MS = 10_000;
-// Generous box around South Korea incl. Jeju, Ulleung and Dokdo. Outside it we say so without asking the server.
-const KOREA = { minLat: 33.0, maxLat: 38.7, minLng: 124.5, maxLng: 132.0 };
-const inKorea = (p: Point) => p.lat >= KOREA.minLat && p.lat <= KOREA.maxLat && p.lng >= KOREA.minLng && p.lng <= KOREA.maxLng;
 
 // Korean originals stay in Hangul: it is what landlords, agents and contracts actually say.
 export const GLOSSARY: { id: string; ko: string; icon: string }[] = [
@@ -137,12 +137,12 @@ function FoundArea({ at, onSeoul }: { at: Point; onSeoul: () => void }) {
   const { t, lang } = useI18n();
   const { c } = useTheme();
   const area = useLoad(async (s) => {
-    if (!inKorea(at)) return null; // no server call for a point we already know is outside Korea
+    if (!inKoreaAt(at)) return null; // no server call for a point we already know is outside Korea
     const [mine, ko] = await Promise.all([api.resolve(lang, at.lat, at.lng, s), lang === 'ko' ? null : api.resolve('ko', at.lat, at.lng, s)]);
     return { ...mine, koName: ko?.dong.name ?? mine.dong.name };
   }, [at.lat, at.lng, lang]);
 
-  if (!inKorea(at)) {
+  if (!inKoreaAt(at)) {
     return (
       <Card tone="alt">
         <T>{t('home.locate.outside')}</T>
@@ -190,3 +190,6 @@ function FoundArea({ at, onSeoul }: { at: Point; onSeoul: () => void }) {
     </View>
   );
 }
+
+// Render errors on this route show a recovery screen instead of closing the app.
+export { CrashScreen as ErrorBoundary } from '@/components/crash-screen';

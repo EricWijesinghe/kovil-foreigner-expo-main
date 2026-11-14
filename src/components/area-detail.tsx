@@ -4,22 +4,19 @@ import { View } from 'react-native';
 import { errorText } from '@/api/client';
 import { around, api } from '@/api/kovil';
 import { ListingCard } from '@/components/listing-card';
-import { Button, Card, EmptyState, ErrorBox, Loading, LineBadge, Row, Section, T } from '@/components/ui';
+import { Button, Card, EmptyState, ErrorBox, LineBadge, Loading, Row, Section, SkeletonCards, T } from '@/components/ui';
 import { useLoad } from '@/hooks/use-load';
 import { useI18n } from '@/i18n';
 import { space } from '@/theme';
+import { distanceM } from '@/tools/geo';
+
+export { distanceM };
 
 const WALK_KM = 1.2;
 /** Homes within this many metres of the point (server allows 100–3,000). */
 const HOMES_RADIUS_M = 1500;
 const MAX_NEARBY = 6;
 
-/** Metres between two points (equirectangular: plenty for walking distances). */
-export function distanceM(aLat: number, aLng: number, bLat: number, bLng: number): number {
-  const x = (((bLng - aLng) * Math.PI) / 180) * Math.cos((((aLat + bLat) / 2) * Math.PI) / 180);
-  const y = ((bLat - aLat) * Math.PI) / 180;
-  return Math.round(Math.sqrt(x * x + y * y) * 6_371_000);
-}
 
 export const fmtDistance = (m: number) => (m < 1000 ? `${m} m` : `${(m / 1000).toFixed(1)} km`);
 
@@ -77,7 +74,7 @@ export function AreaDetail({ lat, lng }: { lat: number; lng: number }) {
       </Section>
 
       <Section title={t('areas.detail.listings')}>
-        {listings.loading && !listings.data ? <Loading /> : null}
+        {listings.loading && !listings.data ? <SkeletonCards count={2} /> : null}
         {listings.error ? <ErrorBox message={errorText(listings.error, failed)} onRetry={listings.reload} /> : null}
         {listings.data?.content.map((l) => <ListingCard key={l.listingUuid} listing={l} />)}
         {listings.data && !listings.data.content.length ? <EmptyState icon="🏠" text={t('home.listings.empty')} /> : null}

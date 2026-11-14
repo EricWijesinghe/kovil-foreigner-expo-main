@@ -2,13 +2,15 @@ import Constants from 'expo-constants';
 import { router } from 'expo-router';
 import { Pressable, View } from 'react-native';
 
+import { rustCoreVersion } from '../../../modules/kovil-core';
+
 import { api } from '@/api/kovil';
 import { useSession } from '@/auth/session';
 import { PERSONA_ICON } from '@/components/onboarding';
 import { Button, Card, Chip, Pill, Row, Screen, Section, T } from '@/components/ui';
 import { useLoad } from '@/hooks/use-load';
 import { LANGUAGES, type Lang, useI18n } from '@/i18n';
-import type { StringKey } from '@/i18n/strings/en';
+import type { StringKey } from '@/i18n/catalogs';
 import { PERSONAS, usePrefs } from '@/prefs';
 import { radius, space, type ThemeMode, useTheme } from '@/theme';
 
@@ -96,7 +98,7 @@ export default function Me() {
           <T>{t('settings.about.body')}</T>
           <T v="small">{t('settings.attribution')}</T>
           <T v="small">
-            {lang} · v{Constants.expoConfig?.version ?? '?'}
+            {[lang, `v${Constants.expoConfig?.version ?? '?'}`, rustCoreVersion() ? `Rust core ${rustCoreVersion()}` : null].filter(Boolean).join(' · ')}
           </T>
         </Card>
       </Section>
@@ -124,3 +126,6 @@ function LangRow({ label, code, active, onPress }: { label: string; code?: strin
     </Pressable>
   );
 }
+
+// Render errors on this route show a recovery screen instead of closing the app.
+export { CrashScreen as ErrorBoundary } from '@/components/crash-screen';

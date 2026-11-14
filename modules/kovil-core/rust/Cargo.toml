@@ -1,0 +1,17 @@
+[package]
+name = "kovil-core"
+version = "0.1.0"
+edition = "2024"
+publish = false
+description = "KOVIL on-device core: housing money maths and geo checks, exported to Android over JNI."
+
+[lib]
+name = "kovil_core"
+crate-type = ["cdylib", "rlib"]
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "unwind"
+strip = true

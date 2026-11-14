@@ -1,0 +1,18 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'kr.co.kovil'
+version = '0.1.0'
+
+// libkovil_core.so per ABI comes from the Rust crate (../rust) via `npm run rust:android` into src/main/jniLibs.
+// Without it the module still loads and reports unavailable, and the app uses its TypeScript fallback.
+android {
+  namespace "kr.co.kovil.core"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+    consumerProguardFiles "consumer-rules.pro"
+  }
+}
